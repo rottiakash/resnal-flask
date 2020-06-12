@@ -2,8 +2,9 @@ from flask import Flask, request, send_file, Response
 import sys
 from pymongo import MongoClient
 import xlsxwriter
+import os
 
-client = MongoClient("rottiakash.ddns.net", 27017)
+client = MongoClient("db", 27017)
 db = client.data
 student = db.students
 marks = db.marks
@@ -30,12 +31,12 @@ def batchwize():
     query = {"batch": batch, "sem": sem}
     yearback = str(request.args.get("yearback"))
     backlog = str(request.args.get("backlog"))
-    workbook = xlsxwriter.Workbook("../public/%s-%s_Sem.xlsx" % (batch, sem))
+    workbook = xlsxwriter.Workbook("/public/%s-%s_Sem.xlsx" % (batch, sem))
     if request.args.get("sec"):
         sec = str(request.args.get("sec"))
         query["section"] = sec
         workbook = xlsxwriter.Workbook(
-            "../public/%s-%s_Sem-%s_Sec.xlsx" % (batch, sem, sec)
+            "/public/%s-%s_Sem-%s_Sec.xlsx" % (batch, sem, sec)
         )
     worksheet = workbook.add_worksheet()
     heading = workbook.add_format({"bold": True, "border": 1})
@@ -163,13 +164,13 @@ def subjectWize():
     backlog = str(request.args.get("backlog"))
     query = {"batch": batch, "sem": sem}
     workbook = xlsxwriter.Workbook(
-        "../public/%s-%s_Sem-%s.xlsx" % (batch, sem, subjectCode)
+        "/public/%s-%s_Sem-%s.xlsx" % (batch, sem, subjectCode)
     )
     if request.args.get("sec"):
         sec = str(request.args.get("sec"))
         query["section"] = sec
         workbook = xlsxwriter.Workbook(
-            "../public/%s-%s_Sem-%s_Sec-%s.xlsx" % (batch, sem, sec, subjectCode)
+            "/public/%s-%s_Sem-%s_Sec-%s.xlsx" % (batch, sem, sec, subjectCode)
         )
     s = list(student.find(query))
     batch2 = batch[2:]
@@ -302,12 +303,12 @@ def exportall():
     yearback = str(request.args.get("yearback"))
     backlog = str(request.args.get("backlog"))
     query = {"batch": batch, "sem": sem}
-    workbook = xlsxwriter.Workbook("../public/All_subs-%s-%s_Sem.xlsx" % (batch, sem))
+    workbook = xlsxwriter.Workbook("/public/All_subs-%s-%s_Sem.xlsx" % (batch, sem))
     if request.args.get("sec"):
         sec = str(request.args.get("sec"))
         query["section"] = sec
         workbook = xlsxwriter.Workbook(
-            "../public/All_subs-%s-%s_Sem-%s_Sec.xlsx" % (batch, sem, sec)
+            "/public/All_subs-%s-%s_Sem-%s_Sec.xlsx" % (batch, sem, sec)
         )
     allstudents = []
     results = list(student.find(query))
@@ -421,4 +422,5 @@ def exportall():
     return status_code
 
 
-app.run(host="0.0.0.0", debug=True)
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
