@@ -46,6 +46,7 @@ def batchwize():
     worksheet.write(0, 3, "GPA", heading)
     merge_format = workbook.add_format({"align": "center", "bold": True, "border": 1})
     worksheet.merge_range("E1:F1", "Overall Grade", merge_format)
+    worksheet.write(0, 6, "Total Marks", heading)
     border_format = workbook.add_format({"border": 1})
     border_format_fcd_green = workbook.add_format(
         {"align": "center", "border": 1, "bg_color": "green"}
@@ -102,6 +103,7 @@ def batchwize():
         worksheet.write(j, 2, i["section"], border_format)
         worksheet.write(j, 3, i["gpa"], border_format)
         worksheet.merge_range(j, 4, j, 5, i["totalFCD"], fcd_format)
+        worksheet.write(j, 6, i["totalmarks"], border_format)
         j = j + 1
     worksheet.write("O4", "FCD", heading)
     worksheet.write("P4", "FC", heading)
